@@ -43,10 +43,13 @@ The forecast suggests a **potential 6–7% price increase over the next 30 days 
 ---
 
 ## 🗂️ Repository Structure
-
-
-
-
+- **data/** → input datasets (CSV)
+- **sql/** → BigQuery SQL scripts for data preparation, ARIMA⁺ model training, forecasting, evaluation, and summary table creation
+- **looker/** → Looker Studio dashboard assets: preview screenshots, public dashboard link
+- **CONCLUSIONS.md** → key analytical insights
+- **README.md** → main project documentation
+  
+---
 
 ## 🔗 Dashboard Access
 📊 [View Looker Studio Dashboard](https://lookerstudio.google.com/reporting/f8b6c728-c363-4f2e-9b8a-6b44f72e5eca)
