@@ -1,5 +1,8 @@
 # 🧠 Bitcoin Price Forecast – BigQuery ML + Looker Studio  
 
+## The forecast suggests a **potential 9.3% price increase over the next 30 days (Oct 18–Nov 16, 2025)**, reflecting Bitcoin’s short-term recovery momentum and typical market volatility.
+
+
 ## 📊 Overview
 This project demonstrates a **time series forecasting pipeline** built entirely within **BigQuery ML** using the **ARIMA⁺ model**.  
 It predicts **Bitcoin (BTC/USD)** prices for the next 30 days and visualizes the results in **Looker Studio**.
@@ -9,19 +12,20 @@ It predicts **Bitcoin (BTC/USD)** prices for the next 30 days and visualizes the
 ## ⚙️ Model Details
 | Parameter | Value | Description |
 |------------|--------|-------------|
-| **Model type** | `ARIMA(2, 1, 0)` | Uses the previous 2 price lags (p=2), first-order differencing (d=1), and no moving average term (q=0). |
-| **Drift** | `false` | The model does not assume a constant upward/downward trend — ideal for volatile assets like BTC. |
-| **Seasonality** | `WEEKLY + YEARLY` | Captures short-term trading cycles and long-term market behavior. |
-| **AIC** | ≈ 69,410 | Lowest among 12 tested configurations (best model fit). |
-| **Log Likelihood** | ≈ –34,702 | Indicates strong alignment with historical data. |
-| **Variance** | ≈ 2.43 × 10⁵ | Stable forecast variance across time. |
+| **Model type** | `ARIMA(1, 2, 1)` | Considers one previous price lag (p=1), applies second-order differencing (d=2), and includes one moving average term (q=1). |
+| **Drift** | `false` | The model does not assume a fixed growth or decline trend — suitable for volatile assets like BTC. |
+| **Seasonality** | `WEEKLY + YEARLY` | Captures both short-term (weekly) and long-term (annual) trading patterns. |
+| **AIC** | ≈ 69,568 | Slightly higher than the previous version, reflecting minor market volatility. |
+| **Log Likelihood** | ≈ –34,781 | Indicates stable model fitting with sensitivity to new data points. |
+| **Variance** | ≈ 2.52 × 10⁵ | Reflects a wider confidence interval due to increased short-term fluctuations. |
 
 ---
 
 ## 🔍 Model Interpretation
-The **ARIMA(2,1,0)** model identifies short-term autocorrelation and captures both weekly and yearly seasonality in Bitcoin’s behavior.  
-By removing drift, the model avoids introducing a constant growth trend, making it robust for high-volatility assets.  
-The forecast suggests a **potential 6–7% price increase over the next 30 days (Oct 17–Nov 15, 2025)**.  
+The **ARIMA(1,2,1)** model dynamically adapts to new daily BTC/USD data, capturing both short-term volatility and long-term seasonal patterns.  
+With two levels of differencing (d=2), it stabilizes the series during trend shifts, while the moving-average term (q=1) helps correct short-term noise.  
+The absence of drift ensures neutrality, preventing bias toward constant growth or decline.  
+The forecast suggests a **potential 9.3% price increase over the next 30 days (Oct 18–Nov 16, 2025)**, reflecting Bitcoin’s short-term recovery momentum and typical market volatility.  
 
 ---
 
@@ -46,7 +50,6 @@ The forecast suggests a **potential 6–7% price increase over the next 30 days 
 - **data/** → input datasets (CoinGecko, CSV)
 - **sql/** → BigQuery SQL scripts for data preparation, ARIMA⁺ model training, forecasting, evaluation, and summary table creation
 - **looker/** → Looker Studio dashboard assets: preview screenshots, public dashboard link
-- **CONCLUSIONS.md** → key analytical insights
 - **README.md** → main project documentation
   
 ---
