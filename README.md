@@ -36,7 +36,7 @@ The forecast suggests a **potential 6–7% price increase over the next 30 days 
 ---
 
 ## 📈 Results Preview
-![Looker Studio Dashboard Screenshot](dashboard_preview.png)
+![Looker Studio Dashboard Screenshot](btc_dashboard_preview.png)
 
 > The dashboard presents actual vs forecast prices, market capitalization trends, and key model metrics.
 
@@ -52,7 +52,7 @@ The forecast suggests a **potential 6–7% price increase over the next 30 days 
 ---
 
 ## 🔗 Dashboard Access
-📊 [View Looker Studio Dashboard](https://lookerstudio.google.com/reporting/f8b6c728-c363-4f2e-9b8a-6b44f72e5eca)
+📊 [View Looker Studio Dashboard](https://lookerstudio.google.com/reporting/9e5eed5c-a61e-49cc-979c-28a1769d744a)
 
 ---
 
