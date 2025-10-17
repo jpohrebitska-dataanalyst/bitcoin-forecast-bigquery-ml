@@ -9,5 +9,5 @@ Forecast horizon: 30 days (October 18 – November 16 2025)
 
 Visualized with dynamic filters, KPI cards, and forecast deltas
 
-🔗 You can open **Interactive Dashboard:** [Open Looker Dashboard](https://lookerstudio.google.com/reporting/9e5eed5c-a61e-49cc-979c-28a1769d744) 
+🔗 You can open [Looker Dashboard](https://lookerstudio.google.com/reporting/9e5eed5c-a61e-49cc-979c-28a1769d744) 
 
