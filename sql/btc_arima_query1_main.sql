@@ -5,7 +5,9 @@ CREATE OR REPLACE TABLE `btc-forecast-475211.btc_data.btc_daily_clean` AS
 SELECT
   DATE(snapped_at) AS record_date,   -- перетворюємо TIMESTAMP на DATE
   price AS price_usd,
-  market_cap AS market_capitalization
+  market_cap AS market_capitalization,
+  total_volume AS total_volume_usd,
+  circulating_supply AS circulating_supply_btc
 FROM `btc-forecast-475211.btc_data.btc_daily`
 WHERE price IS NOT NULL
 ORDER BY record_date
@@ -49,6 +51,8 @@ SELECT
   price_usd AS actual_price,
   NULL AS predicted_price,
   market_capitalization,
+  total_volume_usd,
+  circulating_supply_btc,
   'Actual' AS data_type
 FROM `btc-forecast-475211.btc_data.btc_daily_clean`
 UNION ALL
@@ -58,6 +62,8 @@ SELECT
   NULL AS actual_price,
   forecast_value AS predicted_price,
   NULL AS market_capitalization,   -- капіталізацію можна теж спрогнозувати пізніше
+  NULL AS total_volume_usd,
+  NULL AS circulating_supply_btc,
   'Forecast' AS data_type
 FROM ML.FORECAST(
   MODEL `btc-forecast-475211.btc_data.btc_arima`,
@@ -91,7 +97,7 @@ last_forecast AS (
   ORDER BY date DESC
   LIMIT 1
 )
--- Об’єднуємо обидва результати + рахуємо різницю
+-- Об’єднуємо обидва результати + рахуємо дельту
 SELECT
   a.last_actual_date, 
   a.last_actual_price, 
@@ -100,7 +106,7 @@ SELECT
   -- абсолютна різниця ($)
   ROUND(f.last_predicted_price - a.last_actual_price, 2) AS price_diff_usd, 
   -- відносна різниця (%)
-  ROUND(((f.last_predicted_price - a.last_actual_price) / a.last_actual_price) , 2) AS price_diff_pct
+  ROUND(((f.last_predicted_price - a.last_actual_price) / a.last_actual_price) , 4) AS price_diff_pct
 FROM last_actual a
 CROSS JOIN last_forecast f;
 
