@@ -1,0 +1,64 @@
+# === 1️⃣ Авторизація ===
+from google.auth import default
+from google.cloud import bigquery
+import yfinance as yf
+import pandas as pd
+from datetime import datetime, timedelta
+
+# Авторизація в Google Cloud
+credentials, project_id = default()
+client = bigquery.Client(credentials=credentials, project=project_id)
+print(f"✅ Авторизовано як: {project_id}")
+
+# === 2️⃣ Конфігурація ===
+project_id = "btc-forecast-475211"
+table_id = "btc-forecast-475211.btc_data.btc_daily"
+log_table_id = "btc-forecast-475211.btc_data.btc_update_log"
+
+# === 3️⃣ Завантаження історії з Yahoo Finance ===
+tomorrow = (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+btc = yf.download("BTC-USD", start="2014-01-01", end=tomorrow, progress=False)
+btc = btc.reset_index()
+btc.columns = btc.columns.map(lambda x: x[0] if isinstance(x, tuple) else x)
+btc.columns = [str(c).lower() for c in btc.columns]
+
+btc["snapped_at"] = pd.to_datetime(btc["date"])
+btc["price"] = btc["close"]
+btc["total_volume"] = btc["volume"]   # volume тут уже в доларах
+
+# === 4️⃣ Поточні snapshot-дані з Ticker ===
+btc_ticker = yf.Ticker("BTC-USD")
+info = btc_ticker.info
+
+market_cap = info.get("marketCap", None)
+circulating_supply = info.get("circulatingSupply", None)
+
+# === 5️⃣ Додаємо до DataFrame ===
+btc["market_cap"] = market_cap
+btc["circulating_supply"] = circulating_supply
+
+df = btc[["snapped_at", "price", "market_cap", "total_volume", "circulating_supply"]]
+
+# === 6️⃣ Завантаження в BigQuery (перезапис таблиці) ===
+job_config = bigquery.LoadJobConfig(write_disposition="WRITE_TRUNCATE")
+job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
+job.result()
+
+# === 7️⃣ Логування оновлення ===
+log_entry = pd.DataFrame([{
+    "update_time": datetime.now(),
+    "rows_loaded": len(df),
+    "market_cap": market_cap,
+    "circulating_supply": circulating_supply,
+    "status": "success"
+}])
+
+log_job_config = bigquery.LoadJobConfig(write_disposition="WRITE_APPEND")
+log_job = client.load_table_from_dataframe(log_entry, log_table_id, job_config=log_job_config)
+log_job.result()
+
+# === 8️⃣ Звіт у консолі ===
+print(f"✅ Завантажено {len(df)} рядків у {table_id}")
+print(f"🕒 Дата оновлення: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"💰 Поточна ринкова капіталізація: {market_cap:,.0f} USD")
+print(f"⚙️ Circulating supply: {circulating_supply:,.0f} BTC")
